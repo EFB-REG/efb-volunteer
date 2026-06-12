@@ -88,7 +88,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الاسمم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الاسم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -347,26 +347,26 @@
   // الرابط الصحيح (تأكدي أنه الرابط الذي ينتهي بـ /exec)
   const url = "https://script.google.com/macros/s/AKfycbxfF5a_icmM-RXkAI7lkBSPquDAUhgltNP7t1a6BqAjni371L1S3TwCllPYUDu4dH4PeA/exec"; 
 
+  // ابحثي عن الجزء الخاص بالـ fetch وعدليه ليكون هكذا:
   fetch(url, {
     method: 'POST',
-    // حذفنا 'no-cors' لكي نستطيع استقبال الرد (الـ code)
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    // هنا تضعين السطر الذي سألتِ عنه
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   })
   .then(res => res.json())
   .then(res => {
+    // كود النجاح
     document.getElementById('formContainer').classList.add('hidden');
     document.getElementById('successMessage').classList.remove('hidden');
-    document.getElementById('userCode').innerText = res.code; // إظهار الكود
+    document.getElementById('userCode').innerText = res.code;
   })
   .catch(err => {
-    // إذا ظهر خطأ هنا، فالمشكلة في الـ CORS في جوجل
     console.error(err);
-    alert("تم الإرسال! (إذا ظهر هذا الخطأ رغم نجاح الإرسال، تأكدي من إعدادات CORS في الـ Apps Script).");
+    alert("حدث خطأ أثناء الإرسال.");
     btn.disabled = false;
     btn.innerText = "إرسال | Submit";
   });
-};
 </script>
 </body>
 </html>
