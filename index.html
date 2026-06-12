@@ -140,10 +140,22 @@
           </div>
         </div>
 
+        <!-- حقول المصريين فقط (الرقم القومي) -->
         <div id="egyptianFields" class="hidden">
           <label>National ID <span style="color:red">*</span> | الرقم القومي</label>
           <input type="text" name="idNumber" id="idInput" maxlength="14" data-required="true">
+        </div>
 
+        <!-- حقول الأجانب فقط (الدولة + جواز السفر) -->
+        <div id="foreignFields" class="hidden">
+          <label>Country <span style="color:red">*</span> | الدولة</label>
+          <input type="text" name="country" data-required="true">
+          <label>ID/Passport <span style="color:red">*</span> | رقم الهوية/جواز السفر</label>
+          <input type="text" name="passportId" data-required="true">
+        </div>
+
+        <!-- المحافظة — تظهر للمصريين والأجانب على حد سواء -->
+        <div id="governorateField" class="hidden">
           <label>المحافظة <span style="color:red">*</span></label>
           <div class="dd-wrapper" data-name="governorate" data-required="true">
             <div class="dd-trigger placeholder"><span class="dd-label">اختر المحافظة</span><i class="ti ti-chevron-down"></i></div>
@@ -178,13 +190,6 @@
               <div class="dd-option" data-value="الوادي الجديد">الوادي الجديد</div>
             </div>
           </div>
-        </div>
-
-        <div id="foreignFields" class="hidden">
-          <label>Country <span style="color:red">*</span> | الدولة</label>
-          <input type="text" name="country" data-required="true">
-          <label>ID/Passport <span style="color:red">*</span> | رقم الهوية/جواز السفر</label>
-          <input type="text" name="passportId" data-required="true">
         </div>
 
         <label>Detailed Area <span style="color:red">*</span> | منطقة السكن بالتفصيل</label>
@@ -458,17 +463,30 @@
 
   // ============================
   // toggleNationality
+  // المحافظة تظهر للاتنين (مصري وأجنبي) بعد الاختيار
   // ============================
   function toggleNationality(val) {
+    // حقول مخصصة للمصريين
     document.getElementById('egyptianFields').classList.toggle('hidden', val !== 'Egyptian');
+    // حقول مخصصة للأجانب
     document.getElementById('foreignFields').classList.toggle('hidden', val !== 'Foreigner');
+    // المحافظة تظهر للاتنين
+    document.getElementById('governorateField').classList.toggle('hidden', !val);
 
+    // required logic
     document.getElementById('idInput').setAttribute('data-required', val === 'Egyptian' ? 'true' : 'false');
 
     var countryInput = document.querySelector('input[name="country"]');
     var passportInput = document.querySelector('input[name="passportId"]');
     if (countryInput) countryInput.setAttribute('data-required', val === 'Foreigner' ? 'true' : 'false');
     if (passportInput) passportInput.setAttribute('data-required', val === 'Foreigner' ? 'true' : 'false');
+
+    // لو غيّر الجنسية، نرسّت المحافظة المختارة
+    var govWrapper = document.querySelector('#governorateField .dd-wrapper');
+    if (govWrapper) {
+      ddSetValue(govWrapper, '', 'اختر المحافظة');
+      govWrapper.querySelector('.dd-trigger').classList.add('placeholder');
+    }
   }
 
   // ============================
