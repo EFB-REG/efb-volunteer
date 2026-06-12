@@ -77,7 +77,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الاسمم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الاسم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -186,19 +186,17 @@
       </div>
 
       <!-- Step 4 -->
-      <div class="form-step">
-        <h3>Volunteer Programs | برامج التطوع</h3>
-        <label>Select Program | اختر البرنامج</label>
-        <select name="volunteerProgram" id="programList">
-          <option value="">Select | اختر</option>
-          <option value="لم اشارك مع بنك الطعام من قبل">لم اشارك مع بنك الطعام من قبل</option>
-        </select>
-        <div class="btn-group">
-          <button type="button" class="btn-prev" onclick="prevStep(2)">Back | سابق</button>
-          <button type="submit" class="btn-next" id="submitBtn">Submit | إرسال</button>
-        </div>
-      </div>
-
+<div class="form-step">
+  <h3>Volunteer Programs | برامج التطوع</h3>
+  <label>Select Program | اختر البرنامج</label>
+  <select name="volunteerProgram" id="programList">
+    <option value="">Select | اختر</option>
+  </select>
+  <div class="btn-group">
+    <button type="button" class="btn-prev" onclick="prevStep(2)">Back | سابق</button>
+    <button type="submit" class="btn-next" id="submitBtn">Submit | إرسال</button>
+  </div>
+</div>
     </form>
   </div>
 
@@ -240,7 +238,7 @@
 </footer>
 
 <script>
-  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxfF5a_icmM-RXkAI7lkBSPquDAUhgltNP7t1a6BqAjni371L1S3TwCllPYUDu4dH4PeA/exec";
+  var SCRIPT_URL = https://script.google.com/macros/s/AKfycbxV-IjBLsVaGxtYOFQWyZGLpgqNc6c3qK_OMWiACpSoLHHcT2UgFs_o_tZRvfYU_3491w/exec";
 
   let currentStep = 0;
   const steps = document.querySelectorAll(".form-step");
