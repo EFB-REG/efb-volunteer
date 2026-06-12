@@ -77,7 +77,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الاسمم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الاسم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -324,10 +324,26 @@
     fetch(url + "?" + params)
     .then(function(res) { return res.json(); })
     .then(function(res) {
-      document.getElementById('formContainer').classList.add('hidden');
-      document.getElementById('successMessage').classList.remove('hidden');
-      document.getElementById('userCode').innerText = res.code;
-    })
+  document.getElementById('formContainer').classList.add('hidden');
+  document.getElementById('successMessage').classList.remove('hidden');
+
+  // ✅ لو مسجل قبل كده
+  if (res.code && res.code.toString().startsWith('EXISTING:')) {
+    var existingCode = res.code.toString().replace('EXISTING:', '');
+    document.getElementById('statusTitle').style.color = '#FFD700';
+    document.getElementById('statusTitle').innerText = 'لقد قمت بالتسجيل من قبل';
+    document.getElementById('statusSubText').style.color = '#FFD700';
+    document.getElementById('statusSubText').innerText = 'كودك الموجود:';
+    document.getElementById('userCode').style.color = '#FFD700';
+    document.getElementById('userCode').style.borderColor = '#FFD700';
+    document.getElementById('userCode').innerText = existingCode;
+
+  // ✅ لو تسجيل جديد
+  } else {
+    document.getElementById('statusTitle').innerText = 'Success | تم التسجيل بنجاح';
+    document.getElementById('userCode').innerText = res.code;
+  }
+})
     .catch(function(err) {
       console.error(err);
       alert("حدث خطأ أثناء الإرسال.");
