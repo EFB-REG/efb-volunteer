@@ -88,7 +88,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الاسمم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الاسم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -328,9 +328,9 @@ document.getElementById('volunteerForm').onsubmit = function(e) {
   new FormData(this).forEach((v, k) => data[k] = v);
 
   // الرابط الجديد اللي أخدتيه بعد الـ Deploy
-  const url = "https://script.google.com/macros/s/AKfycbzvx1q5MtENB0lqf9G1VthvGTSS2pcbahUU1WubGSqRzdfTqSMpjYTCoGOoK1QXgkJmlQ/exec"; 
+  const url = "https://script.google.com/macros/s/AKfycbwhZJNqgjyNm-sIn4mYG4RbGDf3TdrCQj_ef5R5ZQ4t9sPpg9X6Wuc1AzgCW2UtRhyphg/exec"; 
 
-  fetch("https://script.google.com/macros/s/AKfycbzvx1q5MtENB0lqf9G1VthvGTSS2pcbahUU1WubGSqRzdfTqSMpjYTCoGOoK1QXgkJmlQ/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbwhZJNqgjyNm-sIn4mYG4RbGDf3TdrCQj_ef5R5ZQ4t9sPpg9X6Wuc1AzgCW2UtRhyphg/exec", {
     method: 'POST',
     mode: 'cors', // دي أهم حاجة دلوقتي
     headers: {'Content-Type': 'application/json'},
