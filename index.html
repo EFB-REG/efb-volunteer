@@ -88,7 +88,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الاسم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الاسمم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -330,9 +330,9 @@ document.getElementById('volunteerForm').onsubmit = function(e) {
   // الرابط الجديد اللي أخدتيه بعد الـ Deploy
   const url = "https://script.google.com/macros/s/AKfycbzvx1q5MtENB0lqf9G1VthvGTSS2pcbahUU1WubGSqRzdfTqSMpjYTCoGOoK1QXgkJmlQ/exec"; 
 
-  fetch(url, {
+  fetch("https://script.google.com/macros/s/AKfycbzvx1q5MtENB0lqf9G1VthvGTSS2pcbahUU1WubGSqRzdfTqSMpjYTCoGOoK1QXgkJmlQ/exec", {
     method: 'POST',
-    mode: 'cors', // تأكدي إنها cors
+    mode: 'cors', // دي أهم حاجة دلوقتي
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(data)
   })
