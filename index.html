@@ -7,6 +7,35 @@
   <title>EFB Volunteer Sign up</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <style>
+    /* Custom Select Style */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300ffaa' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 14px center;
+  padding-left: 36px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px rgba(0, 104, 71, 0.3);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px rgba(0, 104, 71, 0.3);
+}
+
+select option {
+  background-color: #2a2a2a;
+  color: white;
+  padding: 10px;
+}
     :root {
       --bg-color: #00372c; --container-color: #252525; --input-bg: #333333;
       --accent-green: #006847; --text-white: #ffffff; --error-red: #ff4d4d;
@@ -77,7 +106,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الاسمم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الاسم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -116,7 +145,7 @@
         </select>
         <div id="egyptianFields" class="hidden">
           <label>National ID <span style="color:red">*</span> | الرقم القومي</label>
-          <input type="text" name="idNumber" id="idInput" maxlength="14">
+          <input type="text" name="idNumber" id="idInput" maxlength="14" data-required="true">
           <label for="governorate">المحافظة:</label>
           <select id="governorate" name="governorate">
             <option value="" disabled selected>اختر المحافظة</option>
@@ -189,9 +218,9 @@
 <div class="form-step">
   <h3>Volunteer Programs | برامج التطوع</h3>
   <label>Select Program | اختر البرنامج</label>
-  <select name="volunteerProgram" id="programList">
-    <option value="">Select | اختر</option>
-  </select>
+  <select name="volunteerProgram" id="programList" data-required="true">
+  <option value="">Select | اختر</option>
+</select>
   <div class="btn-group">
     <button type="button" class="btn-prev" onclick="prevStep(2)">Back | سابق</button>
     <button type="submit" class="btn-next" id="submitBtn">Submit | إرسال</button>
@@ -269,18 +298,22 @@
   // ملي قائمة البرامج
   // ============================
   function fillProgramList() {
-    var programSelect = document.getElementById('programList');
-    // امسح كل حاجة غير الـ options الثابتة
-    programSelect.innerHTML = '<option value="">Select | اختر</option><option value="لم اشارك مع بنك الطعام من قبل">لم اشارك مع بنك الطعام من قبل</option>';
+  var programSelect = document.getElementById('programList');
+  programSelect.innerHTML = '<option value="">Select | اختر</option>';
 
-    var programs = formLists["Volunteer Program"] || [];
-    programs.forEach(function(p) {
-      var opt = document.createElement('option');
-      opt.value = p;
-      opt.textContent = p;
-      programSelect.appendChild(opt);
-    });
-  }
+  var programs = formLists["Volunteer Program"] || [];
+  programs.forEach(function(p) {
+    var opt = document.createElement('option');
+    opt.value = p;
+    opt.textContent = p;
+    programSelect.appendChild(opt);
+  });
+
+  var lastOpt = document.createElement('option');
+  lastOpt.value = "لم اشارك مع بنك الطعام من قبل";
+  lastOpt.textContent = "لم اشارك مع بنك الطعام من قبل";
+  programSelect.appendChild(lastOpt);
+}
 
   // ============================
   // Validation
@@ -295,6 +328,7 @@
     let isValid = true;
 
     inputs.forEach(function(input) {
+  if (input.getAttribute('data-required') === 'false') return;
       let fieldValid = true;
       if (!input.value.trim()) fieldValid = false;
       if (input.id === 'phoneInput' && input.value.length !== 11) fieldValid = false;
@@ -335,52 +369,59 @@
   }
 
   function toggleNationality() {
-    const val = document.getElementById('nationality').value;
-    document.getElementById('egyptianFields').classList.toggle('hidden', val !== 'Egyptian');
-    document.getElementById('foreignFields').classList.toggle('hidden', val !== 'Foreigner');
-  }
+  var val = document.getElementById('nationality').value;
+  document.getElementById('egyptianFields').classList.toggle('hidden', val !== 'Egyptian');
+  document.getElementById('foreignFields').classList.toggle('hidden', val !== 'Foreigner');
 
+  document.getElementById('idInput').setAttribute('data-required', val === 'Egyptian' ? 'true' : 'false');
+  
+  var countryInput = document.querySelector('input[name="country"]');
+  var passportInput = document.querySelector('input[name="passportId"]');
+  if (countryInput) countryInput.setAttribute('data-required', val === 'Foreigner' ? 'true' : 'false');
+  if (passportInput) passportInput.setAttribute('data-required', val === 'Foreigner' ? 'true' : 'false');
+}
   // ============================
   // toggleEntity — بيملي قائمة الجهات حسب نوع المشاركة
   // ============================
-  function toggleEntity() {
-    var type = document.getElementById('contributionType').value;
-    var div = document.getElementById('entityField');
-    var select = document.getElementById('entityList');
+function toggleEntity() {
+  var type = document.getElementById('contributionType').value;
+  var div = document.getElementById('entityField');
+  var select = document.getElementById('entityList');
 
-    if (type === 'Individual' || !type) {
-      div.classList.add('hidden');
-      return;
-    }
-
-    div.classList.remove('hidden');
-    select.innerHTML = '';
-
-    // الـ key في الشيت بيطابق اسم العمود في "Form data"
-    var keyMap = {
-      "Company": "Company",
-      "School": "School",
-      "University": "University",
-      "Youth Center": "Youth Center"
-    };
-
-    var items = formLists[keyMap[type]] || [];
-
-    if (items.length === 0) {
-      var opt = document.createElement('option');
-      opt.value = "";
-      opt.textContent = "لا توجد بيانات حالياً";
-      select.appendChild(opt);
-      return;
-    }
-
-    items.forEach(function(item) {
-      var opt = document.createElement('option');
-      opt.value = item;
-      opt.textContent = item;
-      select.appendChild(opt);
-    });
+  if (type === 'Individual' || !type) {
+    div.classList.add('hidden');
+    select.removeAttribute('data-required');
+    return;
   }
+
+  div.classList.remove('hidden');
+  select.setAttribute('data-required', 'true');
+  select.innerHTML = '';
+
+  var keyMap = {
+    "Company": "Company",
+    "School": "School",
+    "University": "University",
+    "Youth Center": "Youth Center"
+  };
+
+  var items = formLists[keyMap[type]] || [];
+
+  if (items.length === 0) {
+    var opt = document.createElement('option');
+    opt.value = "";
+    opt.textContent = "لا توجد بيانات حالياً";
+    select.appendChild(opt);
+    return;
+  }
+
+  items.forEach(function(item) {
+    var opt = document.createElement('option');
+    opt.value = item;
+    opt.textContent = item;
+    select.appendChild(opt);
+  });
+}
 
   // ============================
   // Submit — JSONP
