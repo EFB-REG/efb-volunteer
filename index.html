@@ -77,7 +77,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الاسم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الاسمم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -173,6 +173,7 @@
           <option value="Company">Company | شركة</option>
           <option value="School">School | مدرسة</option>
           <option value="University">University | جامعة</option>
+          <option value="Youth Center">Youth Center | مركز شباب</option>
         </select>
         <div id="entityField" class="hidden">
           <label>Entity Name <span style="color:red">*</span> | اسم الجهة</label>
@@ -190,6 +191,7 @@
         <label>Select Program | اختر البرنامج</label>
         <select name="volunteerProgram" id="programList">
           <option value="">Select | اختر</option>
+          <option value="لم اشارك مع بنك الطعام من قبل">لم اشارك مع بنك الطعام من قبل</option>
         </select>
         <div class="btn-group">
           <button type="button" class="btn-prev" onclick="prevStep(2)">Back | سابق</button>
@@ -238,10 +240,53 @@
 </footer>
 
 <script>
+  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxfF5a_icmM-RXkAI7lkBSPquDAUhgltNP7t1a6BqAjni371L1S3TwCllPYUDu4dH4PeA/exec";
+
   let currentStep = 0;
   const steps = document.querySelectorAll(".form-step");
   const circles = document.querySelectorAll(".step-circle");
 
+  // ============================
+  // جلب القوائم من الشيت عند تحميل الصفحة
+  // ============================
+  var formLists = {};
+
+  (function loadLists() {
+    var callbackName = "listsCallback_" + Date.now();
+
+    window[callbackName] = function(data) {
+      formLists = data;
+      delete window[callbackName];
+      document.head.removeChild(script);
+      // ملي قائمة البرامج بعد ما الداتا اتحملت
+      fillProgramList();
+    };
+
+    var script = document.createElement('script');
+    script.src = SCRIPT_URL + "?action=getLists&callback=" + callbackName;
+    document.head.appendChild(script);
+  })();
+
+  // ============================
+  // ملي قائمة البرامج
+  // ============================
+  function fillProgramList() {
+    var programSelect = document.getElementById('programList');
+    // امسح كل حاجة غير الـ options الثابتة
+    programSelect.innerHTML = '<option value="">Select | اختر</option><option value="لم اشارك مع بنك الطعام من قبل">لم اشارك مع بنك الطعام من قبل</option>';
+
+    var programs = formLists["Volunteer Program"] || [];
+    programs.forEach(function(p) {
+      var opt = document.createElement('option');
+      opt.value = p;
+      opt.textContent = p;
+      programSelect.appendChild(opt);
+    });
+  }
+
+  // ============================
+  // Validation
+  // ============================
   function validateEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
@@ -297,66 +342,97 @@
     document.getElementById('foreignFields').classList.toggle('hidden', val !== 'Foreigner');
   }
 
+  // ============================
+  // toggleEntity — بيملي قائمة الجهات حسب نوع المشاركة
+  // ============================
   function toggleEntity() {
-    const type = document.getElementById('contributionType').value;
-    const div = document.getElementById('entityField');
+    var type = document.getElementById('contributionType').value;
+    var div = document.getElementById('entityField');
+    var select = document.getElementById('entityList');
+
     if (type === 'Individual' || !type) {
       div.classList.add('hidden');
-    } else {
-      div.classList.remove('hidden');
+      return;
     }
+
+    div.classList.remove('hidden');
+    select.innerHTML = '';
+
+    // الـ key في الشيت بيطابق اسم العمود في "Form data"
+    var keyMap = {
+      "Company": "Company",
+      "School": "School",
+      "University": "University",
+      "Youth Center": "Youth Center"
+    };
+
+    var items = formLists[keyMap[type]] || [];
+
+    if (items.length === 0) {
+      var opt = document.createElement('option');
+      opt.value = "";
+      opt.textContent = "لا توجد بيانات حالياً";
+      select.appendChild(opt);
+      return;
+    }
+
+    items.forEach(function(item) {
+      var opt = document.createElement('option');
+      opt.value = item;
+      opt.textContent = item;
+      select.appendChild(opt);
+    });
   }
 
+  // ============================
+  // Submit — JSONP
+  // ============================
   document.getElementById('volunteerForm').onsubmit = function(e) {
-  e.preventDefault();
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.innerText = "جاري الإرسال...";
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerText = "جاري الإرسال...";
 
-  const formData = new FormData(this);
-  const data = {};
-  formData.forEach(function(v, k) { data[k] = v; });
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach(function(v, k) { data[k] = v; });
 
-  const url = "https://script.google.com/macros/s/AKfycbxfF5a_icmM-RXkAI7lkBSPquDAUhgltNP7t1a6BqAjni371L1S3TwCllPYUDu4dH4PeA/exec";
-  const params = new URLSearchParams(data).toString();
+    const params = new URLSearchParams(data).toString();
+    const callbackName = "efbCallback_" + Date.now();
 
-  // ✅ JSONP — الوحيد اللي بيشتغل مع Google Apps Script
-  const callbackName = "efbCallback_" + Date.now();
-  
-  window[callbackName] = function(res) {
-    // تنظيف
-    delete window[callbackName];
-    document.head.removeChild(script);
+    window[callbackName] = function(res) {
+      delete window[callbackName];
+      document.head.removeChild(script);
 
-    document.getElementById('formContainer').classList.add('hidden');
-    document.getElementById('successMessage').classList.remove('hidden');
+      document.getElementById('formContainer').classList.add('hidden');
+      document.getElementById('successMessage').classList.remove('hidden');
 
-    if (res.code && res.code.toString().startsWith('EXISTING:')) {
-      var existingCode = res.code.toString().replace('EXISTING:', '');
-      document.getElementById('statusTitle').style.color = '#FFD700';
-      document.getElementById('statusTitle').style.fontWeight = 'bold';
-      document.getElementById('statusTitle').innerText = 'لقد قمت بالتسجيل من قبل';
-      document.getElementById('statusSubText').style.color = '#ffffff';
-      document.getElementById('statusSubText').style.fontWeight = 'bold';
-      document.getElementById('statusSubText').innerText = 'Your ID | كود التطوع الخاص بك:';
-      document.getElementById('userCode').style.color = '#FFD700';
-      document.getElementById('userCode').style.borderColor = '#FFD700';
-      document.getElementById('userCode').innerText = existingCode;
-    } else {
-      document.getElementById('statusTitle').innerText = 'Success | تم التسجيل بنجاح';
-      document.getElementById('userCode').innerText = res.code;
-    }
+      if (res.code && res.code.toString().startsWith('EXISTING:')) {
+        var existingCode = res.code.toString().replace('EXISTING:', '');
+        document.getElementById('statusTitle').style.color = '#FFD700';
+        document.getElementById('statusTitle').style.fontWeight = 'bold';
+        document.getElementById('statusTitle').innerText = 'لقد قمت بالتسجيل من قبل';
+        document.getElementById('statusSubText').style.color = '#ffffff';
+        document.getElementById('statusSubText').style.fontWeight = 'bold';
+        document.getElementById('statusSubText').innerText = 'Your ID | كود التطوع الخاص بك:';
+        document.getElementById('userCode').style.color = '#FFD700';
+        document.getElementById('userCode').style.borderColor = '#FFD700';
+        document.getElementById('userCode').innerText = existingCode;
+      } else {
+        document.getElementById('statusTitle').innerText = 'Success | تم التسجيل بنجاح';
+        document.getElementById('userCode').innerText = res.code;
+      }
+    };
+
+    const script = document.createElement('script');
+    script.onerror = function() {
+      alert("حدث خطأ أثناء الإرسال.");
+      btn.disabled = false;
+      btn.innerText = "إرسال | Submit";
+    };
+    script.src = SCRIPT_URL + "?" + params + "&callback=" + callbackName;
+    document.head.appendChild(script);
   };
-
-  const script = document.createElement('script');
-  script.onerror = function() {
-    alert("حدث خطأ أثناء الإرسال.");
-    btn.disabled = false;
-    btn.innerText = "إرسال | Submit";
-  };
-  script.src = url + "?" + params + "&callback=" + callbackName;
-  document.head.appendChild(script);
-};
 </script>
 </body>
 </html>
