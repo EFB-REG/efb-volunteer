@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <!-- التعديل هنا: رابط الأيقونة ليظهر في المتصفح -->
+<link rel="icon" type="image/png" href="logo.png"><title>EFB Volunteer Sign up </title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-color: #00372c; --container-color: #252525; --input-bg: #333333;
+      --accent-green: #006847; --text-white: #ffffff; --error-red: #ff4d4d;
+    }
+    body { background-color: var(--bg-color); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; color: var(--text-white); }
+    .main-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px 20px; }
+    .container { background-color: var(--container-color); width: 100%; max-width: 550px; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); box-sizing: border-box; }
+    
+    /* Progress Bar */
+    .progress-container { margin-bottom: 30px; display: flex; justify-content: space-between; position: relative; }
+    .progress-bar { position: absolute; top: 50%; left: 0; height: 2px; background: #444; width: 100%; z-index: 1; transform: translateY(-50%); }
+    .progress-fill { position: absolute; top: 50%; left: 0; height: 2px; background: var(--accent-green); width: 0%; z-index: 2; transition: 0.3s; transform: translateY(-50%); }
+    .step-circle { width: 30px; height: 30px; background: #333; border: 2px solid #444; border-radius: 50%; z-index: 3; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    .step-circle.active { border-color: var(--accent-green); background: var(--accent-green); }
+
+    .header-logo { text-align: center; margin-bottom: 20px; }
+    .header-logo img { max-width: 180px; }
+    
+    .form-step { display: none; }
+    .form-step.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    h3 { margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px; font-size: 18px; text-align: left; }
+
+    label { display: block; margin-top: 15px; font-weight: bold; text-align: left; font-size: 14px; color: var(--text-white); }
+    input, select { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 8px; box-sizing: border-box; background-color: var(--input-bg); color: white; margin-top: 8px; font-size: 14px; text-align: left; }
+    
+    input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    input.error-border, select.error-border { border-color: var(--error-red) !important; }
+    .error-text { color: var(--error-red); font-size: 11px; margin-top: 4px; display: none; text-align: left; }
+
+    .btn-group { display: flex; gap: 10px; margin-top: 25px; }
+    button { flex: 1; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; font-size: 16px; transition: 0.3s; }
+    .btn-next { background-color: var(--accent-green); color: white; }
+    .btn-prev { background-color: #444; color: white; }
+    .hidden { display: none; }
+
+    /* Footer Styles */
+    .footer-strip { background-color: var(--bg-color); color: white; padding: 60px 5% 30px 5%; width: 100%; box-sizing: border-box; border-top: 1px solid rgba(255,255,255,0.1); }
+    .footer-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 30px; margin-bottom: 40px; }
+    .footer-brand { flex: 1; min-width: 300px; }
+    .footer-logo-box { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+    .footer-logo-box img { height: 60px; }
+    .footer-logo-box .brand-text { font-size: 22px; font-weight: bold; line-height: 1.2; }
+    .brand-description { font-size: 14px; color: #ccc; line-height: 1.6; max-width: 450px; text-align: left; }
+    .footer-contact { flex: 1; min-width: 250px; }
+    .footer-contact h4 { margin: 0 0 15px 0; font-size: 18px; }
+    .footer-contact p { font-size: 14px; color: #ccc; margin: 8px 0; line-height: 1.4; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+    .copyright { font-size: 14px; color: #ccc; }
+    .social-links { display: flex; gap: 15px; }
+    .social-links a { color: white; font-size: 20px; text-decoration: none; transition: 0.3s; opacity: 0.8; }
+    .social-links a:hover { opacity: 1; transform: translateY(-3px); }
+    
+    #userCode { background: #333; padding: 20px; border-radius: 8px; border: 2px dashed #00ffaa; color: #00ffaa; margin: 20px 0; font-size: 32px; font-weight: bold; text-align: center; }
+    #statusTitle { font-size: 24px; margin-bottom: 10px; color: #00ffaa; }
+  </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+  <div class="container" id="formContainer">
+    <div class="header-logo">
+      <img src="https://drive.google.com/thumbnail?id=13qjqwYdOgv0D2vx93pVrFcyeAIwT2IYP&sz=w1000" alt="Logo">
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar"></div>
+      <div class="progress-fill" id="progressFill"></div>
+      <div class="step-circle active">1</div>
+      <div class="step-circle">2</div>
+      <div class="step-circle">3</div>
+      <div class="step-circle">4</div>
+    </div>
+
+    <form id="volunteerForm">
+      <!-- Step 1 -->
+      <div class="form-step active">
+        <h3>Basic Information | البيانات الأساسية</h3>
+        <label>Full Name <span style="color:red">*</span> | الاسم بالكامل</label>
+        <input type="text" name="name" data-required="true">
+        <div class="error-text">Required | مطلوب</div>
+        <div style="display: flex; gap: 10px;">
+          <div style="flex: 1;">
+            <label>Age <span style="color:red">*</span> | السن</label>
+            <input type="number" name="age" data-required="true" min="10" max="90">
+          </div>
+          <div style="flex: 1;">
+            <label>Gender <span style="color:red">*</span> | النوع</label>
+            <select name="gender" data-required="true">
+              <option value="">Select | اختر</option>
+              <option value="Male">Male | ذكر</option>
+              <option value="Female">Female | أنثى</option>
+            </select>
+          </div>
+        </div>
+        <label>Phone Number <span style="color:red">*</span> | رقم الموبايل</label>
+        <input type="text" name="phone" id="phoneInput" maxlength="11" data-required="true">
+        <div class="error-text">Must be 11 digits | يجب إدخال ١١ رقم</div>
+        <label>Email Address <span style="color:red">*</span> | البريد الإلكتروني</label>
+        <input type="email" name="email" id="emailInput" data-required="true">
+        <div class="error-text">Invalid Email | بريد غير صحيح</div>
+        <div class="btn-group"><button type="button" class="btn-next" onclick="nextStep(1)">Next | التالي</button></div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="form-step">
+        <h3> Personal information | البيانات الشخصية </h3>
+        <label>Nationality <span style="color:red">*</span> | الجنسية</label>
+        <select name="nationality" id="nationality" onchange="toggleNationality()" data-required="true">
+          <option value="">Select | اختر</option>
+          <option value="Egyptian">Egyptian | مصري</option>
+          <option value="Foreigner">Foreigner | جنسية أخرى</option>
+        </select>
+        <div id="egyptianFields" class="hidden">
+          <label>National ID <span style="color:red">*</span> | الرقم القومي</label>
+          <input type="text" name="idNumber" id="idInput" maxlength="14">
+         <label for="governorate">المحافظة:</label>
+<select id="governorate" name="governorate" required>
+    <option value="" disabled selected>اختر المحافظة</option>
+    <option value="القاهرة">القاهرة</option>
+    <option value="الجيزة">الجيزة</option>
+    <option value="الإسكندرية">الإسكندرية</option>
+    <option value="القليوبية">القليوبية</option>
+    <option value="الدقهلية">الدقهلية</option>
+    <option value="المنيا">المنيا</option>
+    <option value="الشرقية">الشرقية</option>
+    <option value="أسيوط">أسيوط</option>
+    <option value="الغربية">الغربية</option>
+    <option value="سوهاج">سوهاج</option>
+    <option value="البحيرة">البحيرة</option>
+    <option value="المنوفية">المنوفية</option>
+    <option value="كفر الشيخ">كفر الشيخ</option>
+    <option value="الفيوم">الفيوم</option>
+    <option value="بني سويف">بني سويف</option>
+    <option value="قنا">قنا</option>
+    <option value="الأقصر">الأقصر</option>
+    <option value="أسوان">أسوان</option>
+    <option value="دمياط">دمياط</option>
+    <option value="الإسماعيلية">الإسماعيلية</option>
+    <option value="بورسعيد">بورسعيد</option>
+    <option value="السويس">السويس</option>
+    <option value="مطروح">مطروح</option>
+    <option value="شمال سيناء">شمال سيناء</option>
+    <option value="جنوب سيناء">جنوب سيناء</option>
+    <option value="البحر الأحمر">البحر الأحمر</option>
+    <option value="الوادي الجديد">الوادي الجديد</option>
+</select>
+        </div>
+        <div id="foreignFields" class="hidden">
+          <label>Country <span style="color:red">*</span> | الدولة</label>
+          <input type="text" name="country">
+          <label>ID/Passport <span style="color:red">*</span> | رقم الهوية/جواز السفر</label>
+          <input type="text" name="passportId">
+        </div>
+        <label>Detailed Area <span style="color:red">*</span> |  منطقة السكن بالتفصيل</label>
+        <input type="text" name="area" data-required="true">
+        <div class="btn-group">
+          <button type="button" class="btn-prev" onclick="prevStep(0)">Back | سابق</button>
+          <button type="button" class="btn-next" onclick="nextStep(2)">Next | التالي</button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="form-step">
+        <h3>Participation | نوع المشاركة</h3>
+        <label>Contribution Type <span style="color:red">*</span> | نوع المشاركة</label>
+        <select name="contributionType" id="contributionType" onchange="toggleEntity()" data-required="true">
+          <option value="">Select | اختر</option>
+          <option value="Individual">Individual | مشاركة فردية </option>
+          <option value="Company">Company | شركة</option>
+          <option value="School">School | مدرسة</option>
+          <option value="University">University | جامعة</option>
+        </select>
+        <div id="entityField" class="hidden">
+          <label>Entity Name <span style="color:red">*</span> | اسم الجهة</label>
+          <select name="entityName" id="entityList"></select>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn-prev" onclick="prevStep(1)">Back | سابق</button>
+          <button type="button" class="btn-next" onclick="nextStep(3)">Next | التالي</button>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="form-step">
+        <h3>Volunteer Programs | برامج التطوع</h3>
+        <label>Select Program | اختر البرنامج</label>
+        <select name="volunteerProgram" id="programList"></select>
+        <div class="btn-group">
+          <button type="button" class="btn-prev" onclick="prevStep(2)">Back | سابق</button>
+          <button type="submit" class="btn-next" id="submitBtn">Submit | إرسال</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Success/Existing Message -->
+  <div id="successMessage" class="container hidden" style="text-align: center;">
+    <div id="statusTitle">Success | تم التسجيل بنجاح</div>
+    <p id="statusSubText">Your ID | كود التطوع الخاص بك:</p>
+    <div id="userCode"></div>
+    <button onclick="location.reload()" class="btn-next">New Registration | تسجيل جديد</button>
+  </div>
+</div>
+
+<footer class="footer-strip">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-logo-box">
+        <img src="https://drive.google.com/thumbnail?id=1S4dIqHNz5VXNHHJagAwAvukPa3gWxMlZ&sz=w500" alt="EFB Logo">
+      
+      </div>
+      <p class="brand-description">The official Volunteer Registration Portal for the Egyptian Food Bank. Join us in our mission to fight hunger and make a difference in the lives of those in need across Egypt. Together, we can create a stronger, more compassionate community.</p>
+    </div>
+    <div class="footer-contact">
+      <h4>Contact</h4>
+      <p>Email: efb.volunteer@gmail.com</p>
+      <p>Phone: +201022335917</p>
+      <p>Location: 44 Gamal Abd Al Naser Axis, New Cairo 3</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="copyright">© 2026 EFB. — All rights reserved.</div>
+    <div class="social-links">
+      <a href="https://www.facebook.com/share/g/1B2YaUgNYo/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://www.instagram.com/egyfoodbank?" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.efb.eg/ar" target="_blank"><i class="fas fa-globe"></i></a>
+      <a href="https://www.linkedin.com/company/egyptian-food-bank/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+      <a href="https://x.com/EGYFOODBANK" target="_blank"><i class="fab fa-x-twitter"></i></a>
+      <a href="https://www.tiktok.com/@egyfoodbank?is_from_webapp=1&sender_device=pc" target="_blank"><i class="fab fa-tiktok"></i></a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  let currentStep = 0;
+  const steps = document.querySelectorAll(".form-step");
+  const circles = document.querySelectorAll(".step-circle");
+  let allLists = {};
+
+  const governorates = ["Cairo | القاهرة", "Giza | الجيزة", "Alexandria | الإسكندرية", "Dakahlia | الدقهلية", "Sharkia | الشرقية", "Monufia | المنوفية", "Qalyubia | القليوبية", "Beheira | البحيرة", "Gharbia | الغربية", "Port Said | بور سعيد", "Damietta | دمياط", "Ismailia | الإسماعيلية", "Suez | السويس", "Kafr El Sheikh | كفر الشيخ", "Fayoum | الفيوم", "Beni Suef | بني سويف", "Minya | المنيا", "Assiut | أسيوط", "Sohag | سوهاج", "Qena | قنا", "Luxor | الأقصر", "Aswan | أسوان"];
+
+  window.onload = function() {
+    google.script.run.withSuccessHandler(function(lists) {
+      allLists = lists;
+      fillSelect('programList', lists.programs);
+      fillSelect('govList', governorates);
+    }).getFormDataLists();
+  };
+
+  function fillSelect(id, items) {
+    const sel = document.getElementById(id);
+    sel.innerHTML = '<option value="">Select | اختر</option>';
+    if(items) items.forEach(item => { let opt = document.createElement('option'); opt.value = item; opt.text = item; sel.add(opt); });
+  }
+
+  function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+
+  function nextStep(stepIdx) {
+    const activeStep = steps[currentStep];
+    const inputs = activeStep.querySelectorAll("input, select");
+    let isValid = true;
+    inputs.forEach(input => {
+      if (input.offsetParent !== null) {
+        let fieldValid = true;
+        if (input.dataset.required === "true" && !input.value.trim()) fieldValid = false;
+        if (input.id === 'phoneInput' && input.value.length !== 11) fieldValid = false;
+        if (input.id === 'emailInput' && !validateEmail(input.value)) fieldValid = false;
+        const error = input.nextElementSibling;
+        if (!fieldValid) { input.classList.add('error-border'); if(error && error.classList.contains('error-text')) error.style.display = 'block'; isValid = false; }
+        else { input.classList.remove('error-border'); if(error && error.classList.contains('error-text')) error.style.display = 'none'; }
+      }
+    });
+    if (!isValid) return;
+    steps[currentStep].classList.remove("active");
+    currentStep = stepIdx;
+    steps[currentStep].classList.add("active");
+    updateProgress();
+  }
+
+  function prevStep(stepIdx) { steps[currentStep].classList.remove("active"); currentStep = stepIdx; steps[currentStep].classList.add("active"); updateProgress(); }
+
+  function updateProgress() {
+    circles.forEach((c, i) => c.classList.toggle("active", i <= currentStep));
+    document.getElementById("progressFill").style.width = (currentStep / 3) * 100 + "%";
+  }
+
+  function toggleNationality() {
+    const val = document.getElementById('nationality').value;
+    document.getElementById('egyptianFields').classList.toggle('hidden', val !== 'Egyptian');
+    document.getElementById('foreignFields').classList.toggle('hidden', val !== 'Foreigner');
+  }
+
+  function toggleEntity() {
+    const type = document.getElementById('contributionType').value;
+    const div = document.getElementById('entityField');
+    if (type === 'Individual' || !type) div.classList.add('hidden');
+    else {
+      div.classList.remove('hidden');
+      if (type === 'Company') fillSelect('entityList', allLists.companies);
+      else if (type === 'School') fillSelect('entityList', allLists.schools);
+      else if (type === 'University') fillSelect('entityList', allLists.universities);
+    }
+  }
+
+  document.getElementById('volunteerForm').onsubmit = function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; 
+    btn.innerText = "Processing... | جاري الإرسال...";
+    
+    const data = {};
+    new FormData(this).forEach((v, k) => data[k] = v);
+
+    const url = "https://script.google.com/macros/s/AKfycbzvx1q5MtENB0lqf9G1VthvGTSS2pcbahUU1WubGSqRzdfTqSMpjYTCoGOoK1QXgkJmlQ/exec";
+
+    // التعديل: استخدام no-cors لضمان مرور الطلب بنجاح
+    fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(() => {
+      // بما أننا استخدمنا no-cors، لا يمكن قراءة الرد (res.json)
+      // سنظهر رسالة نجاح مباشرة
+      document.getElementById('formContainer').classList.add('hidden');
+      document.getElementById('successMessage').classList.remove('hidden');
+      document.getElementById('userCode').innerText = "تم التسجيل بنجاح!";
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert("حدث خطأ، تأكدي من الاتصال بالإنترنت.");
+      btn.disabled = false;
+      btn.innerText = "Submit | إرسال";
+    });
+  };
+</script>
+</body>
+</html>
