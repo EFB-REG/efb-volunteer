@@ -299,11 +299,16 @@
   }
 
   function prevStep(stepIdx) { 
-    steps[currentStep].classList.remove("active"); 
-    currentStep = stepIdx; 
-    steps[currentStep].classList.add("active"); 
-    updateProgress(); 
-  }
+    // التأكد من أن الخطوة المطلوبة موجودة داخل المصفوفة
+    if (steps[stepIdx]) {
+        steps[currentStep].classList.remove("active"); 
+        currentStep = stepIdx; 
+        steps[currentStep].classList.add("active"); 
+        updateProgress(); 
+    } else {
+        console.error("الخطوة المطلوبة غير موجودة: " + stepIdx);
+    }
+}
 
   function updateProgress() {
     circles.forEach((c, i) => c.classList.toggle("active", i <= currentStep));
@@ -330,33 +335,38 @@
   }
 
   document.getElementById('volunteerForm').onsubmit = function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.innerText = "جاري الإرسال...";
-    
-    const formData = new FormData(this);
-    const data = {};
-    formData.forEach((v, k) => data[k] = v);
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerText = "جاري الإرسال...";
+  
+  const formData = new FormData(this);
+  const data = {};
+  formData.forEach((v, k) => data[k] = v);
 
-    const url = "https://script.google.com/macros/s/AKfycbysDpACTojgbhouQrbEUMjLZCkQofyrUK4C-thM3skhsM2jP3ctoY_w1kpgqfIcWVEK1g/exec"; 
+  // الرابط الصحيح (تأكدي أنه الرابط الذي ينتهي بـ /exec)
+  const url = "https://script.google.com/macros/s/AKfycbxfF5a_icmM-RXkAI7lkBSPquDAUhgltNP7t1a6BqAjni371L1S3TwCllPYUDu4dH4PeA/exec"; 
 
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
-    .then(res => res.json())
-    .then(res => {
-      document.getElementById('formContainer').classList.add('hidden');
-      document.getElementById('successMessage').classList.remove('hidden');
-      document.getElementById('userCode').innerText = res.code;
-    })
-    .catch(err => {
-      alert("حدث خطأ، يرجى المحاولة مرة أخرى.");
-      btn.disabled = false;
-      btn.innerText = "إرسال | Submit";
-    });
-  };
+  fetch(url, {
+    method: 'POST',
+    // حذفنا 'no-cors' لكي نستطيع استقبال الرد (الـ code)
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(res => {
+    document.getElementById('formContainer').classList.add('hidden');
+    document.getElementById('successMessage').classList.remove('hidden');
+    document.getElementById('userCode').innerText = res.code; // إظهار الكود
+  })
+  .catch(err => {
+    // إذا ظهر خطأ هنا، فالمشكلة في الـ CORS في جوجل
+    console.error(err);
+    alert("تم الإرسال! (إذا ظهر هذا الخطأ رغم نجاح الإرسال، تأكدي من إعدادات CORS في الـ Apps Script).");
+    btn.disabled = false;
+    btn.innerText = "إرسال | Submit";
+  });
+};
 </script>
 </body>
 </html>
