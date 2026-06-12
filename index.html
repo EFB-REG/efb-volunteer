@@ -330,13 +330,15 @@
   // ✅ لو مسجل قبل كده
   if (res.code && res.code.toString().startsWith('EXISTING:')) {
     var existingCode = res.code.toString().replace('EXISTING:', '');
-    document.getElementById('statusTitle').style.color = '#FFD700';
-    document.getElementById('statusTitle').innerText = 'لقد قمت بالتسجيل من قبل';
-    document.getElementById('statusSubText').style.color = '#FFD700';
-    document.getElementById('statusSubText').innerText = 'كودك الموجود:';
-    document.getElementById('userCode').style.color = '#FFD700';
-    document.getElementById('userCode').style.borderColor = '#FFD700';
-    document.getElementById('userCode').innerText = existingCode;
+document.getElementById('statusTitle').style.color = '#FFD700';
+document.getElementById('statusTitle').style.fontWeight = 'bold';
+document.getElementById('statusTitle').innerText = 'لقد قمت بالتسجيل من قبل';
+document.getElementById('statusSubText').style.color = '#FFD700';
+document.getElementById('statusSubText').style.fontWeight = 'bold';
+document.getElementById('statusSubText').innerText = 'Your ID | كود التطوع الخاص بك:';
+document.getElementById('userCode').style.color = '#FFD700';
+document.getElementById('userCode').style.borderColor = '#FFD700';
+document.getElementById('userCode').innerText = existingCode;
 
   // ✅ لو تسجيل جديد
   } else {
