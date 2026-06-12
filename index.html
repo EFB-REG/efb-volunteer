@@ -96,7 +96,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الاسم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الاسمم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -136,7 +136,7 @@
           <div class="dd-panel">
             <div class="dd-option disabled" data-value="">Select | اختر</div>
             <div class="dd-option" data-value="Egyptian">Egyptian | مصري</div>
-            <div class="dd-option" data-value="Foreigner">Foreigner |  أجنبي</div>
+            <div class="dd-option" data-value="Foreigner">Foreigner | أجنبي</div>
           </div>
         </div>
 
@@ -154,13 +154,13 @@
           <input type="text" name="passportId" data-required="true">
         </div>
 
-        <!-- المحافظة — تظهر للمصريين والأجانب على حد سواء -->
+        <!-- المحافظة — تظهر للمصريين والأجانب بعد اختيار الجنسية -->
         <div id="governorateField" class="hidden">
-          <label>Governorate | المحافظة <span style="color:red">*</span></label>
+          <label>Governorate <span style="color:red">*</span> | المحافظة</label>
           <div class="dd-wrapper" data-name="governorate" data-required="true">
-            <div class="dd-trigger placeholder"><span class="dd-label">Select Governorate | أختر المحافظة</span><i class="ti ti-chevron-down"></i></div>
+            <div class="dd-trigger placeholder"><span class="dd-label">Select Governorate | اختر المحافظة</span><i class="ti ti-chevron-down"></i></div>
             <div class="dd-panel">
-              <div class="dd-option disabled" data-value="">Select Governorate | أختر المحافظة</div>
+              <div class="dd-option disabled" data-value="">Select Governorate | اختر المحافظة</div>
               <div class="dd-option" data-value="القاهرة">القاهرة</div>
               <div class="dd-option" data-value="الجيزة">الجيزة</div>
               <div class="dd-option" data-value="الإسكندرية">الإسكندرية</div>
@@ -192,8 +192,12 @@
           </div>
         </div>
 
-        <label>Detailed Area <span style="color:red">*</span> | منطقة السكن بالتفصيل</label>
-        <input type="text" name="area" data-required="true">
+        <!-- منطقة السكن — تظهر بعد اختيار الجنسية فقط -->
+        <div id="areaField" class="hidden">
+          <label>Detailed Area <span style="color:red">*</span> | منطقة السكن بالتفصيل</label>
+          <input type="text" name="area" data-required="true">
+        </div>
+
         <div class="btn-group">
           <button type="button" class="btn-prev" onclick="prevStep(0)">Back | سابق</button>
           <button type="button" class="btn-next" onclick="nextStep(2)">Next | التالي</button>
@@ -389,7 +393,10 @@
     var wrapper = document.getElementById('programDropdown');
     var programs = formLists["Volunteer Program"] || [];
     var items = programs.map(function(p) { return { value: p, label: p }; });
-    items.push({ value: "لم اشارك مع بنك الطعام من قبل", label: "لم اشارك مع بنك الطعام من قبل" });
+    items.push({
+      value: "لم اشارك مع بنك الطعام من قبل",
+      label: "I have never volunteered with the Egyptian Food Bank before | لم اتطوع مع بنك الطعام من قبل"
+    });
     ddRebuild(wrapper, items, true, "Select | اختر");
   }
 
@@ -407,6 +414,8 @@
     var inputs = activeStep.querySelectorAll("input[data-required='true']");
     inputs.forEach(function(input) {
       if (input.getAttribute('data-required') === 'false') return;
+      // تجاهل الحقول المخفية
+      if (input.offsetParent === null) return;
       let fieldValid = true;
       if (!input.value.trim()) fieldValid = false;
       if (input.id === 'phoneInput' && input.value.length !== 11) fieldValid = false;
@@ -463,15 +472,16 @@
 
   // ============================
   // toggleNationality
-  // المحافظة تظهر للاتنين (مصري وأجنبي) بعد الاختيار
+  // المحافظة ومنطقة السكن يظهران بعد اختيار الجنسية
   // ============================
   function toggleNationality(val) {
-    // حقول مخصصة للمصريين
+    // حقول المصريين
     document.getElementById('egyptianFields').classList.toggle('hidden', val !== 'Egyptian');
-    // حقول مخصصة للأجانب
+    // حقول الأجانب
     document.getElementById('foreignFields').classList.toggle('hidden', val !== 'Foreigner');
-    // المحافظة تظهر للاتنين
+    // المحافظة ومنطقة السكن — للاتنين بعد الاختيار
     document.getElementById('governorateField').classList.toggle('hidden', !val);
+    document.getElementById('areaField').classList.toggle('hidden', !val);
 
     // required logic
     document.getElementById('idInput').setAttribute('data-required', val === 'Egyptian' ? 'true' : 'false');
@@ -481,16 +491,16 @@
     if (countryInput) countryInput.setAttribute('data-required', val === 'Foreigner' ? 'true' : 'false');
     if (passportInput) passportInput.setAttribute('data-required', val === 'Foreigner' ? 'true' : 'false');
 
-    // لو غيّر الجنسية، نرسّت المحافظة المختارة
+    // reset المحافظة لو غيّر الجنسية
     var govWrapper = document.querySelector('#governorateField .dd-wrapper');
     if (govWrapper) {
-      ddSetValue(govWrapper, '', 'اختر المحافظة');
+      ddSetValue(govWrapper, '', 'Select Governorate | اختر المحافظة');
       govWrapper.querySelector('.dd-trigger').classList.add('placeholder');
     }
   }
 
   // ============================
-  // toggleEntity — بيملي قائمة الجهات حسب نوع المشاركة
+  // toggleEntity
   // ============================
   function toggleEntity(val) {
     var div = document.getElementById('entityField');
