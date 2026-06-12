@@ -332,8 +332,8 @@ document.getElementById('volunteerForm').onsubmit = function(e) {
 
   fetch(url, {
     method: 'POST',
-    mode: 'cors', // خليها cors
-    headers: { 'Content-Type': 'application/json' },
+    mode: 'cors', // تأكدي إنها cors
+    headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(data)
   })
   .then(res => res.json()) // دلوقتي نقدر نقرأ الرد
