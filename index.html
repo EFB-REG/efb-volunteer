@@ -88,7 +88,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الاسم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الاسمم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -250,10 +250,8 @@
   const circles = document.querySelectorAll(".step-circle");
   let allLists = {};
 
-  const governorates = ["Cairo | القاهرة", "Giza | الجيزة", "Alexandria | الإسكندرية", "Dakahlia | الدقهلية", "Sharkia | الشرقية", "Monufia | المنوفية", "Qalyubia | القليوبية", "Beheira | البحيرة", "Gharbia | الغربية", "Port Said | بور سعيد", "Damietta | دمياط", "Ismailia | الإسماعيلية", "Suez | السويس", "Kafr El Sheikh | كفر الشيخ", "Fayoum | الفيوم", "Beni Suef | بني سويف", "Minya | المنيا", "Assiut | أسيوط", "Sohag | سوهاج", "Qena | قنا", "Luxor | الأقصر", "Aswan | أسوان"];
-
+  // جلب البيانات عند التحميل
   window.onload = function() {
-    // محاولة جلب البيانات (لو شغال جوه جوجل)
     if (typeof google !== 'undefined' && google.script) {
       google.script.run.withSuccessHandler(function(lists) {
         allLists = lists;
@@ -273,19 +271,26 @@
 
   function nextStep(stepIdx) {
     const activeStep = steps[currentStep];
-    const inputs = activeStep.querySelectorAll("input, select");
+    const inputs = activeStep.querySelectorAll("input[data-required='true'], select[data-required='true']");
     let isValid = true;
+    
     inputs.forEach(input => {
-      if (input.offsetParent !== null) {
-        let fieldValid = true;
-        if (input.dataset.required === "true" && !input.value.trim()) fieldValid = false;
-        if (input.id === 'phoneInput' && input.value.length !== 11) fieldValid = false;
-        if (input.id === 'emailInput' && !validateEmail(input.value)) fieldValid = false;
-        const error = input.nextElementSibling;
-        if (!fieldValid) { input.classList.add('error-border'); if(error && error.classList.contains('error-text')) error.style.display = 'block'; isValid = false; }
-        else { input.classList.remove('error-border'); if(error && error.classList.contains('error-text')) error.style.display = 'none'; }
+      let fieldValid = true;
+      if (!input.value.trim()) fieldValid = false;
+      if (input.id === 'phoneInput' && input.value.length !== 11) fieldValid = false;
+      if (input.id === 'emailInput' && !validateEmail(input.value)) fieldValid = false;
+      
+      const error = input.nextElementSibling;
+      if (!fieldValid) { 
+        input.classList.add('error-border'); 
+        if(error && error.classList.contains('error-text')) error.style.display = 'block'; 
+        isValid = false; 
+      } else { 
+        input.classList.remove('error-border'); 
+        if(error && error.classList.contains('error-text')) error.style.display = 'none'; 
       }
     });
+
     if (!isValid) return;
     steps[currentStep].classList.remove("active");
     currentStep = stepIdx;
@@ -293,7 +298,12 @@
     updateProgress();
   }
 
-  function prevStep(stepIdx) { steps[currentStep].classList.remove("active"); currentStep = stepIdx; steps[currentStep].classList.add("active"); updateProgress(); }
+  function prevStep(stepIdx) { 
+    steps[currentStep].classList.remove("active"); 
+    currentStep = stepIdx; 
+    steps[currentStep].classList.add("active"); 
+    updateProgress(); 
+  }
 
   function updateProgress() {
     circles.forEach((c, i) => c.classList.toggle("active", i <= currentStep));
@@ -309,8 +319,9 @@
   function toggleEntity() {
     const type = document.getElementById('contributionType').value;
     const div = document.getElementById('entityField');
-    if (type === 'Individual' || !type) div.classList.add('hidden');
-    else {
+    if (type === 'Individual' || !type) {
+      div.classList.add('hidden');
+    } else {
       div.classList.remove('hidden');
       if (type === 'Company') fillSelect('entityList', allLists.companies);
       else if (type === 'School') fillSelect('entityList', allLists.schools);
@@ -318,38 +329,34 @@
     }
   }
 
-document.getElementById('volunteerForm').onsubmit = function(e) {
-  e.preventDefault();
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.innerText = "جاري الإرسال...";
-  
-  const data = {};
-  new FormData(this).forEach((v, k) => data[k] = v);
+  document.getElementById('volunteerForm').onsubmit = function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerText = "جاري الإرسال...";
+    
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((v, k) => data[k] = v);
 
-  // الرابط الجديد اللي أخدتيه بعد الـ Deploy
-  const url = "https://script.google.com/macros/s/AKfycbysDpACTojgbhouQrbEUMjLZCkQofyrUK4C-thM3skhsM2jP3ctoY_w1kpgqfIcWVEK1g/exec"; 
+    const url = "https://script.google.com/macros/s/AKfycbysDpACTojgbhouQrbEUMjLZCkQofyrUK4C-thM3skhsM2jP3ctoY_w1kpgqfIcWVEK1g/exec"; 
 
-  fetch(URL, {
-  method: 'POST',
-  mode: 'no-cors', // هذا الجزء مهم جداً لتخطي مشكلة الـ CORS
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
-  },
-  body: new URLSearchParams(formData)
-});
-  .then(res => res.json()) // دلوقتي نقدر نقرأ الرد
-  .then(res => {
-    document.getElementById('formContainer').classList.add('hidden');
-    document.getElementById('successMessage').classList.remove('hidden');
-    // هنا هيظهر الكود الحقيقي اللي جاي من جوجل
-    document.getElementById('userCode').innerText = res.code;
-  })
-  .catch(err => {
-    alert("خطأ في الاتصال، تأكدي من الرابط.");
-    btn.disabled = false;
-  });
-};
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(res => {
+      document.getElementById('formContainer').classList.add('hidden');
+      document.getElementById('successMessage').classList.remove('hidden');
+      document.getElementById('userCode').innerText = res.code;
+    })
+    .catch(err => {
+      alert("حدث خطأ، يرجى المحاولة مرة أخرى.");
+      btn.disabled = false;
+      btn.innerText = "إرسال | Submit";
+    });
+  };
 </script>
 </body>
 </html>
