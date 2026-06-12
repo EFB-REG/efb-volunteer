@@ -96,7 +96,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الاسم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الاسمم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -110,13 +110,13 @@
               <div class="dd-trigger placeholder"><span class="dd-label">Select | اختر</span><i class="ti ti-chevron-down"></i></div>
               <div class="dd-panel">
                 <div class="dd-option disabled" data-value="">Select | اختر</div>
-                <div class="dd-option" data-value="Male">Male | ذكر</div>
-                <div class="dd-option" data-value="Female">Female | أنثى</div>
+                <div class="dd-option" data-value="Male">Female | أنثى</div>
+                <div class="dd-option" data-value="Female">Male | ذكر</div>
               </div>
             </div>
           </div>
         </div>
-        <label>Phone Number <span style="color:red">*</span> | رقم الموبايل</label>
+        <label>Phone Number <span style="color:red">*</span> | رقم الهاتف</label>
         <input type="text" name="phone" id="phoneInput" maxlength="11" data-required="true">
         <div class="error-text">Must be 11 digits | يجب إدخال ١١ رقم</div>
         <label>Email Address <span style="color:red">*</span> | البريد الإلكتروني</label>
@@ -291,7 +291,7 @@
 </footer>
 
 <script>
-  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycby15veEj-XJjE_4kJBv3e92K9H6AYJC1vDiVoSo18dA1xgr31au2fwkPF67nXiYI0GfRA/exec";
+  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2R2zmMteyZgKncRk00YxVSvDV0HXpvZOENJSJUZ4TOvN2nCzXLJmBi5zpmblQS8S3lg/exec";
 
   let currentStep = 0;
   const steps = document.querySelectorAll(".form-step");
@@ -571,10 +571,18 @@
         document.getElementById('userCode').style.color = '#FFD700';
         document.getElementById('userCode').style.borderColor = '#FFD700';
         document.getElementById('userCode').innerText = existingCode;
-      } else {
-        document.getElementById('statusTitle').innerText = 'Success | تم التسجيل بنجاح';
-        document.getElementById('userCode').innerText = res.code;
-      }
+      } else if (res.code === 'MAIL_FAILED') {
+  document.getElementById('statusTitle').style.color = '#ff4d4d';
+  document.getElementById('statusTitle').innerText = 'فشل الإرسال | Delivery Failed';
+  document.getElementById('statusSubText').innerText = '';
+  document.getElementById('userCode').style.borderColor = '#ff4d4d';
+  document.getElementById('userCode').style.color = '#ff4d4d';
+  document.getElementById('userCode').style.fontSize = '14px';
+  document.getElementById('userCode').innerText = 'البريد الإلكتروني غير صحيح أو ممتلئ\nThe email address is invalid or full\n\nتواصل معنا: efb.volunteer@gmail.com';
+} else {
+  document.getElementById('statusTitle').innerText = 'Success | تم التسجيل بنجاح';
+  document.getElementById('userCode').innerText = res.code;
+}
     };
 
     const script = document.createElement('script');
