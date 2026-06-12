@@ -253,15 +253,18 @@
   const governorates = ["Cairo | القاهرة", "Giza | الجيزة", "Alexandria | الإسكندرية", "Dakahlia | الدقهلية", "Sharkia | الشرقية", "Monufia | المنوفية", "Qalyubia | القليوبية", "Beheira | البحيرة", "Gharbia | الغربية", "Port Said | بور سعيد", "Damietta | دمياط", "Ismailia | الإسماعيلية", "Suez | السويس", "Kafr El Sheikh | كفر الشيخ", "Fayoum | الفيوم", "Beni Suef | بني سويف", "Minya | المنيا", "Assiut | أسيوط", "Sohag | سوهاج", "Qena | قنا", "Luxor | الأقصر", "Aswan | أسوان"];
 
   window.onload = function() {
-    google.script.run.withSuccessHandler(function(lists) {
-      allLists = lists;
-      fillSelect('programList', lists.programs);
-      fillSelect('govList', governorates);
-    }).getFormDataLists();
+    // محاولة جلب البيانات (لو شغال جوه جوجل)
+    if (typeof google !== 'undefined' && google.script) {
+      google.script.run.withSuccessHandler(function(lists) {
+        allLists = lists;
+        fillSelect('programList', lists.programs);
+      }).getFormDataLists();
+    }
   };
 
   function fillSelect(id, items) {
     const sel = document.getElementById(id);
+    if (!sel) return;
     sel.innerHTML = '<option value="">Select | اختر</option>';
     if(items) items.forEach(item => { let opt = document.createElement('option'); opt.value = item; opt.text = item; sel.add(opt); });
   }
@@ -324,18 +327,15 @@
     const data = {};
     new FormData(this).forEach((v, k) => data[k] = v);
 
+    // الرابط اللي إنتِ واخدّاه من جوجل سكربت
     const url = "https://script.google.com/macros/s/AKfycbzvx1q5MtENB0lqf9G1VthvGTSS2pcbahUU1WubGSqRzdfTqSMpjYTCoGOoK1QXgkJmlQ/exec";
 
-    // التعديل: استخدام no-cors لضمان مرور الطلب بنجاح
     fetch(url, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     })
     .then(() => {
-      // بما أننا استخدمنا no-cors، لا يمكن قراءة الرد (res.json)
-      // سنظهر رسالة نجاح مباشرة
       document.getElementById('formContainer').classList.add('hidden');
       document.getElementById('successMessage').classList.remove('hidden');
       document.getElementById('userCode').innerText = "تم التسجيل بنجاح!";
