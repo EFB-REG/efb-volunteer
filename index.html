@@ -96,7 +96,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الأسمم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الأسم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -144,7 +144,8 @@
         <div id="egyptianFields" class="hidden">
           <label>National ID <span style="color:red">*</span> | الرقم القومي</label>
           <input type="text" name="idNumber" id="idInput" maxlength="14" data-required="true">
-<div id="idError" style="color: var(--error-red); font-size: 11px; margin-top: 4px; display: none; text-align: left;">Must be 14 digits | يجب أن يكون 14 رقم</div>
+          <div class="error-text">Must be 14 digits | يجب أن يكون 14 رقم</div>
+        </div>
 
         <!-- حقول الأجانب فقط (الدولة + جواز السفر) -->
         <div id="foreignFields" class="hidden">
@@ -417,7 +418,7 @@
     const activeStep = steps[currentStep];
     let isValid = true;
 
-    var inputs = document.querySelectorAll(".form-step.active input[data-required='true']");
+    var inputs = activeStep.querySelectorAll("input[data-required='true']");
     inputs.forEach(function(input) {
       if (input.getAttribute('data-required') === 'false') return;
       // تجاهل الحقول المخفية
@@ -427,34 +428,15 @@
       if (!normalizedValue) fieldValid = false;
       if (input.id === 'phoneInput' && (normalizedValue.length !== 11 || !normalizedValue.startsWith('01'))) fieldValid = false;
       if (input.id === 'emailInput' && !validateEmail(input.value)) fieldValid = false;
-      if (input.name === 'idNumber') {
-        if (!normalizedValue || normalizedValue.length !== 14) {
-          fieldValid = false;
-          input.classList.add('error-border');
-          document.getElementById('idError').style.display = 'block';
-        } else {
-          input.classList.remove('error-border');
-          document.getElementById('idError').style.display = 'none';
-        }
-        if (!fieldValid) isValid = false;
-        return;
-      }
-      var errorEl = null;
-      var el = input.nextElementSibling;
-      while (el) {
-        if (el.classList.contains('error-text')) { errorEl = el; break; }
-        el = el.nextElementSibling;
-      }
-      if (!errorEl) {
-        errorEl = input.parentElement.querySelector('.error-text');
-      }
+      if (input.name === 'idNumber' && normalizedValue.length !== 14) fieldValid = false;
+      const error = input.nextElementSibling;
       if (!fieldValid) {
         input.classList.add('error-border');
-        if (errorEl) errorEl.style.display = 'block';
+        if (error && error.classList.contains('error-text')) error.style.display = 'block';
         isValid = false;
       } else {
         input.classList.remove('error-border');
-        if (errorEl) errorEl.style.display = 'none';
+        if (error && error.classList.contains('error-text')) error.style.display = 'none';
       }
     });
 
