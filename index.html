@@ -96,7 +96,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الأسمم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الأسم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -404,7 +404,7 @@
   // Validation
   // ============================
   function validateEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    return /^[^\s@]+@[^\s@]+\.com$/.test(email);
   }
 
   function nextStep(stepIdx) {
@@ -418,8 +418,9 @@
       if (input.offsetParent === null) return;
       let fieldValid = true;
       if (!input.value.trim()) fieldValid = false;
-      if (input.id === 'phoneInput' && input.value.length !== 11) fieldValid = false;
+      if (input.id === 'phoneInput' && (input.value.length !== 11 || !input.value.startsWith('01'))) fieldValid = false;
       if (input.id === 'emailInput' && !validateEmail(input.value)) fieldValid = false;
+      if (input.name === 'idNumber' && input.value.length !== 14) fieldValid = false;
 
       const error = input.nextElementSibling;
       if (!fieldValid) {
