@@ -422,7 +422,7 @@
     inputs.forEach(function(input) {
       if (input.getAttribute('data-required') === 'false') return;
       // تجاهل الحقول المخفية
-      if (input.offsetParent === null) return;
+      if (input.closest('.hidden')) return;
       let fieldValid = true;
       var normalizedValue = normalizeDigits(input.value.trim());
       if (!normalizedValue) fieldValid = false;
