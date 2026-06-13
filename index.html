@@ -31,6 +31,7 @@
     input[type=number] { -moz-appearance: textfield; }
     input.error-border, .dd-wrapper.error-border .dd-trigger { border-color: var(--error-red) !important; }
     .error-text { color: var(--error-red); font-size: 11px; margin-top: 4px; display: none; text-align: left; }
+    #idError { display: none; }
     input:focus { outline: none; border-color: #555; }
     .btn-group { display: flex; gap: 10px; margin-top: 25px; }
     button { flex: 1; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; font-size: 16px; transition: 0.3s; }
@@ -144,8 +145,7 @@
         <div id="egyptianFields" class="hidden">
           <label>National ID <span style="color:red">*</span> | الرقم القومي</label>
           <input type="text" name="idNumber" id="idInput" maxlength="14" data-required="true">
-<div class="error-text" id="idError">Must be 14 digits | يجب أن يكون 14 رقم</div>
-        </div>
+<div id="idError" style="color: var(--error-red); font-size: 11px; margin-top: 4px; display: none; text-align: left;">Must be 14 digits | يجب أن يكون 14 رقم</div>
 
         <!-- حقول الأجانب فقط (الدولة + جواز السفر) -->
         <div id="foreignFields" class="hidden">
