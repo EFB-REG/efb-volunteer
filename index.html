@@ -96,7 +96,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الأسمم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الأسم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -429,14 +429,17 @@
       if (input.id === 'phoneInput' && (normalizedValue.length !== 11 || !normalizedValue.startsWith('01'))) fieldValid = false;
       if (input.id === 'emailInput' && !validateEmail(input.value)) fieldValid = false;
       if (input.name === 'idNumber' && normalizedValue.length !== 14) fieldValid = false;
-      const error = input.nextElementSibling;
+      var errorEl = input.nextElementSibling;
+      if (!errorEl || !errorEl.classList.contains('error-text')) {
+        errorEl = input.parentElement.querySelector('.error-text');
+      }
       if (!fieldValid) {
         input.classList.add('error-border');
-        if (error && error.classList.contains('error-text')) error.style.display = 'block';
+        if (errorEl) errorEl.style.display = 'block';
         isValid = false;
       } else {
         input.classList.remove('error-border');
-        if (error && error.classList.contains('error-text')) error.style.display = 'none';
+        if (errorEl) errorEl.style.display = 'none';
       }
     });
 
