@@ -102,7 +102,7 @@
         <div style="display: flex; gap: 10px;">
           <div style="flex: 1;">
             <label>Age <span style="color:red">*</span> | السن</label>
-            <input type="number" name="age" data-required="true" min="10" max="90">
+            <input type="number" name="age" data-required="true">
           </div>
           <div style="flex: 1;">
             <label>Gender <span style="color:red">*</span> | النوع</label>
@@ -144,6 +144,7 @@
         <div id="egyptianFields" class="hidden">
           <label>National ID <span style="color:red">*</span> | الرقم القومي</label>
           <input type="text" name="idNumber" id="idInput" maxlength="14" data-required="true">
+          <div class="error-text">Must be 14 digits | يجب أن يكون 14 رقم</div>
         </div>
 
         <!-- حقول الأجانب فقط (الدولة + جواز السفر) -->
@@ -403,6 +404,12 @@
   // ============================
   // Validation
   // ============================
+  function normalizeDigits(str) {
+    return str.replace(/[٠-٩]/g, function(d) {
+      return d.charCodeAt(0) - 1632;
+    });
+  }
+
   function validateEmail(email) {
     return /^[^\s@]+@[^\s@]+\.com$/.test(email);
   }
@@ -417,11 +424,11 @@
       // تجاهل الحقول المخفية
       if (input.offsetParent === null) return;
       let fieldValid = true;
-      if (!input.value.trim()) fieldValid = false;
-      if (input.id === 'phoneInput' && (input.value.length !== 11 || !input.value.startsWith('01'))) fieldValid = false;
+      var normalizedValue = normalizeDigits(input.value.trim());
+      if (!normalizedValue) fieldValid = false;
+      if (input.id === 'phoneInput' && (normalizedValue.length !== 11 || !normalizedValue.startsWith('01'))) fieldValid = false;
       if (input.id === 'emailInput' && !validateEmail(input.value)) fieldValid = false;
-      if (input.name === 'idNumber' && input.value.length !== 14) fieldValid = false;
-
+      if (input.name === 'idNumber' && normalizedValue.length !== 14) fieldValid = false;
       const error = input.nextElementSibling;
       if (!fieldValid) {
         input.classList.add('error-border');
