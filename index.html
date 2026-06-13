@@ -96,7 +96,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الأسمم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الأسم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -429,12 +429,14 @@
       if (input.id === 'phoneInput' && (normalizedValue.length !== 11 || !normalizedValue.startsWith('01'))) fieldValid = false;
       if (input.id === 'emailInput' && !validateEmail(input.value)) fieldValid = false;
       if (input.name === 'idNumber' && normalizedValue.length !== 14) fieldValid = false;
-      var errorEl = input.nextElementSibling;
-      if (!errorEl || !errorEl.classList.contains('error-text')) {
-        errorEl = input.closest('div').querySelector('.error-text');
+      var errorEl = null;
+      var el = input.nextElementSibling;
+      while (el) {
+        if (el.classList.contains('error-text')) { errorEl = el; break; }
+        el = el.nextElementSibling;
       }
-      if (!errorEl || !errorEl.classList.contains('error-text')) {
-        errorEl = input.parentElement.parentElement.querySelector('.error-text');
+      if (!errorEl) {
+        errorEl = input.parentElement.querySelector('.error-text');
       }
       if (!fieldValid) {
         input.classList.add('error-border');
