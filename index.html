@@ -96,7 +96,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الأسمم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الأسم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -261,7 +261,10 @@
     <div id="userCode"></div>
   <p id="qrLabel" style="display:none; margin:15px 0 5px 0; font-size:14px; color:#ccc;">رمز الـ QR الخاص بك، يرجى الاحتفاظ بصورة الـ QR</p>
   <img id="userQr" src="" style="display:none; width:200px; border-radius:8px; margin:10px auto; box-shadow:0 2px 8px rgba(0,0,0,0.12);">
-    <button onclick="location.reload()" class="btn-next">New Registration | تسجيل جديد</button>
+    <a id="whatsappBtn" href="#" target="_blank" style="display:none; background:#25D366; color:white; padding:15px 25px; text-decoration:none; border-radius:8px; font-weight:bold; text-align:center; font-size:16px; margin-top:20px;">
+      📲 انضم إلى جروب الواتساب الخاص بمتطوعين بنك الطعام المصري
+    </a>
+    <button onclick="location.reload()" class="btn-next" style="margin-top:20px;">New Registration | تسجيل جديد</button>
   </div>
 </div>
 
@@ -595,11 +598,16 @@
       } else {
         document.getElementById('statusTitle').innerText = 'Success | تم التسجيل بنجاح';
         document.getElementById('userCode').innerText = res.code;
-       if (res.qrUrl) {
+      if (res.qrUrl) {
           var qrImg = document.getElementById('userQr');
           qrImg.src = res.qrUrl;
           qrImg.style.display = 'block';
           document.getElementById('qrLabel').style.display = 'block';
+        }
+        if (res.whatsappLink) {
+          var waBtn = document.getElementById('whatsappBtn');
+          waBtn.href = res.whatsappLink;
+          waBtn.style.display = 'block';
         }
       }
     };
