@@ -96,7 +96,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الأسم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الأسمم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -260,7 +260,10 @@
     <p id="statusSubText">Your ID | كود التطوع الخاص بك:</p>
     <div id="userCode"></div>
   <p id="qrLabel" style="display:none; margin:15px 0 5px 0; font-size:14px; color:#ccc;">رمز الـ QR الخاص بك، يرجى الاحتفاظ بصورة الـ QR</p>
-  <img id="userQr" src="" style="display:none; width:200px; border-radius:8px; margin:10px auto; box-shadow:0 2px 8px rgba(0,0,0,0.12);">
+  <img id="userQr" src="" crossorigin="anonymous" style="display:none; width:200px; border-radius:8px; margin:10px auto; box-shadow:0 2px 8px rgba(0,0,0,0.12);">
+  <button type="button" id="downloadQrBtn" onclick="downloadQrCard()" style="display:none; background:#333; color:#00ffaa; border:1px solid #00ffaa; padding:10px 18px; border-radius:30px; font-weight:bold; font-size:13px; cursor:pointer; margin:12px auto 0 auto;">
+    <i class="fas fa-download" style="margin-left:6px;"></i>تحميل صورة الـ QR
+  </button>
     <div id="whatsappWrapper" dir="rtl" style="display:none; flex-direction:column; align-items:center; margin-top:18px;">
       <a id="whatsappBtn" href="#" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#006847; color:white; padding:12px 20px; text-decoration:none; border-radius:30px; font-weight:bold; text-align:center; font-size:14px; max-width:300px; box-shadow:0 4px 10px rgba(0,104,71,0.35); transition:0.2s;">
         <span>لينك جروب الواتساب </span>
@@ -606,6 +609,7 @@
           qrImg.src = res.qrUrl;
           qrImg.style.display = 'block';
           document.getElementById('qrLabel').style.display = 'block';
+          document.getElementById('downloadQrBtn').style.display = 'inline-block';
         }
       if (res.whatsappLink) {
           var waBtn = document.getElementById('whatsappBtn');
@@ -621,9 +625,72 @@
       btn.disabled = false;
       btn.innerText = "إرسال | Submit";
     };
-    script.src = SCRIPT_URL + "?" + params + "&callback=" + callbackName;
+   script.src = SCRIPT_URL + "?" + params + "&callback=" + callbackName;
     document.head.appendChild(script);
   };
+
+  // ============================
+  // تحميل صورة الكود + الـ QR
+  // ============================
+  function downloadQrCard() {
+    var code = document.getElementById('userCode').innerText;
+    var qrImg = document.getElementById('userQr');
+
+    var canvas = document.createElement('canvas');
+    var width = 400;
+    var height = 520;
+    canvas.width = width;
+    canvas.height = height;
+    var ctx = canvas.getContext('2d');
+
+    // خلفية الكارت
+    ctx.fillStyle = '#252525';
+    ctx.fillRect(0, 0, width, height);
+
+    // عنوان
+    ctx.fillStyle = '#00ffaa';
+    ctx.font = 'bold 22px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('EFB Volunteer', width / 2, 50);
+
+    // إطار الكود
+    ctx.strokeStyle = '#00ffaa';
+    ctx.setLineDash([6, 4]);
+    ctx.lineWidth = 2;
+    ctx.strokeRect(30, 80, width - 60, 60);
+    ctx.setLineDash([]);
+
+    // نص الكود
+    ctx.fillStyle = '#00ffaa';
+    ctx.font = 'bold 26px Arial';
+    ctx.fillText(code, width / 2, 118);
+
+    // رسم الـ QR
+    var qrSize = 260;
+    var qrX = (width - qrSize) / 2;
+    var qrY = 170;
+
+    function finalizeDownload() {
+      var link = document.createElement('a');
+      link.download = code + '_QR.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    var tempImg = new Image();
+    tempImg.crossOrigin = 'anonymous';
+    tempImg.onload = function() {
+      // خلفية بيضاء خلف الـ QR
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
+      ctx.drawImage(tempImg, qrX, qrY, qrSize, qrSize);
+      finalizeDownload();
+    };
+    tempImg.onerror = function() {
+      alert('حدث خطأ أثناء تجهيز الصورة، حاولي تاني.');
+    };
+    tempImg.src = qrImg.src;
+  }
 </script>
 </body>
 </html>
