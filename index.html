@@ -96,7 +96,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الأسم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الأسمم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -259,6 +259,7 @@
     <div id="statusTitle">Success | تم التسجيل بنجاح</div>
     <p id="statusSubText">Your ID | كود التطوع الخاص بك:</p>
     <div id="userCode"></div>
+  <img id="userQr" src="" style="display:none; width:200px; border-radius:8px; margin:10px auto; box-shadow:0 2px 8px rgba(0,0,0,0.12);">
     <button onclick="location.reload()" class="btn-next">New Registration | تسجيل جديد</button>
   </div>
 </div>
@@ -583,18 +584,22 @@
         document.getElementById('userCode').style.color = '#FFD700';
         document.getElementById('userCode').style.borderColor = '#FFD700';
         document.getElementById('userCode').innerText = existingCode;
-      } else if (res.code === 'MAIL_FAILED') {
-  document.getElementById('statusTitle').style.color = '#ff4d4d';
-  document.getElementById('statusTitle').innerText = 'فشل الإرسال | Delivery Failed';
-  document.getElementById('statusSubText').innerText = '';
-  document.getElementById('userCode').style.borderColor = '#ff4d4d';
-  document.getElementById('userCode').style.color = '#ff4d4d';
-  document.getElementById('userCode').style.fontSize = '14px';
-  document.getElementById('userCode').innerText = 'البريد الإلكتروني غير صحيح أو ممتلئ\nThe email address is invalid or full\n\nتواصل معنا: efb.volunteer@gmail.com';
-} else {
-  document.getElementById('statusTitle').innerText = 'Success | تم التسجيل بنجاح';
-  document.getElementById('userCode').innerText = res.code;
-}
+     } else if (res.error) {
+        document.getElementById('statusTitle').style.color = '#ff4d4d';
+        document.getElementById('statusTitle').innerText = 'فشل الإرسال | Error';
+        document.getElementById('statusSubText').innerText = '';
+        document.getElementById('userCode').style.borderColor = '#ff4d4d';
+        document.getElementById('userCode').style.color = '#ff4d4d';
+        document.getElementById('userCode').innerText = 'حصل خطأ، حاول تاني أو تواصل معنا';
+      } else {
+        document.getElementById('statusTitle').innerText = 'Success | تم التسجيل بنجاح';
+        document.getElementById('userCode').innerText = res.code;
+        if (res.qrUrl) {
+          var qrImg = document.getElementById('userQr');
+          qrImg.src = res.qrUrl;
+          qrImg.style.display = 'block';
+        }
+      }
     };
 
     const script = document.createElement('script');
