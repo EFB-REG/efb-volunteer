@@ -222,7 +222,7 @@
         </div>
 
         <div id="entityField" class="hidden">
-          <label>Entity Name <span style="color:red">*</span> | اسم الجهة</label>
+          <label>Entity Name <span style="color:red">*</span> | اسمم الجهة</label>
           <div class="dd-wrapper" data-name="entityName" id="entityDropdown" data-required="true">
             <div class="dd-trigger placeholder"><span class="dd-label">Select | اختر</span><i class="ti ti-chevron-down"></i></div>
             <div class="dd-panel"></div>
@@ -404,10 +404,9 @@
     var programs = formLists["Volunteer Program"] || [];
     var items = programs.map(function(p) { return { value: p, label: p }; });
     items.push({
-      value: "لم اشارك مع بنك الطعام من قبل",
+      value: "لم اتطوع مع بنك الطعام من قبل",
       label: "I have never volunteered with the Egyptian Food Bank before | لم اتطوع مع بنك الطعام من قبل"
-    });
-    ddRebuild(wrapper, items, true, "Select | اختر");
+    });    ddRebuild(wrapper, items, true, "Select | اختر");
   }
 
   // ============================
