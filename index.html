@@ -96,7 +96,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الأسمم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الأسم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -247,7 +247,7 @@
         </div>
         <div class="btn-group">
           <button type="button" class="btn-prev" onclick="prevStep(2)">Back | سابق</button>
-          <button type="submit" class="btn-next" id="submitBtn">Submit | إرسال</button>
+          <button type="submit" class="btn-next" id="submitBtn">Submit | تسجيل</button>
         </div>
       </div>
 
@@ -261,9 +261,10 @@
     <div id="userCode"></div>
   <p id="qrLabel" style="display:none; margin:15px 0 5px 0; font-size:14px; color:#ccc;">رمز الـ QR الخاص بك، يرجى الاحتفاظ بصورة الـ QR</p>
   <img id="userQr" src="" crossorigin="anonymous" style="display:none; width:200px; border-radius:8px; margin:10px auto; box-shadow:0 2px 8px rgba(0,0,0,0.12);">
-  <button type="button" id="downloadQrBtn" onclick="downloadQrCard()" style="display:none; background:#333; color:#00ffaa; border:1px solid #00ffaa; padding:10px 18px; border-radius:30px; font-weight:bold; font-size:13px; cursor:pointer; margin:12px auto 0 auto;">
+  <button type="button" id="downloadQrBtn" onclick="downloadQrCard()" style="display:none; background:#333; color:#00ffaa; border:1px solid #00ffaa; padding:10px 18px; border-radius:30px; font-weight:bold; font-size:13px; cursor:pointer; margin:12px auto 0 auto; width:fit-content;">
     <i class="fas fa-download" style="margin-left:6px;"></i>تحميل صورة الـ QR
   </button>
+  <div style="clear:both;"></div>
     <div id="whatsappWrapper" dir="rtl" style="display:none; flex-direction:column; align-items:center; margin-top:18px;">
       <a id="whatsappBtn" href="#" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#006847; color:white; padding:12px 20px; text-decoration:none; border-radius:30px; font-weight:bold; text-align:center; font-size:14px; max-width:300px; box-shadow:0 4px 10px rgba(0,104,71,0.35); transition:0.2s;">
         <span>لينك جروب الواتساب </span>
@@ -596,7 +597,7 @@
         document.getElementById('userCode').innerText = existingCode;
      } else if (res.error) {
         document.getElementById('statusTitle').style.color = '#ff4d4d';
-        document.getElementById('statusTitle').innerText = 'فشل الإرسال | Error';
+        document.getElementById('statusTitle').innerText = 'فشل التسجيل | Error';
         document.getElementById('statusSubText').innerText = '';
         document.getElementById('userCode').style.borderColor = '#ff4d4d';
         document.getElementById('userCode').style.color = '#ff4d4d';
@@ -621,9 +622,9 @@
 
     const script = document.createElement('script');
     script.onerror = function() {
-      alert("حدث خطأ أثناء الإرسال.");
+      alert("حدث خطأ أثناء التسجيل.");
       btn.disabled = false;
-      btn.innerText = "إرسال | Submit";
+      btn.innerText = "تسجيل | Submit";
     };
    script.src = SCRIPT_URL + "?" + params + "&callback=" + callbackName;
     document.head.appendChild(script);
