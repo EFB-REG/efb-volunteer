@@ -96,7 +96,7 @@
       <!-- Step 1 -->
       <div class="form-step active">
         <h3>Basic Information | البيانات الأساسية</h3>
-        <label>Full Name <span style="color:red">*</span> | الأسم بالكامل</label>
+        <label>Full Name <span style="color:red">*</span> | الأسمم بالكامل</label>
         <input type="text" name="name" data-required="true">
         <div class="error-text">Required | مطلوب</div>
         <div style="display: flex; gap: 10px;">
@@ -671,11 +671,27 @@
     var qrX = (width - qrSize) / 2;
     var qrY = 170;
 
-    function finalizeDownload() {
-      var link = document.createElement('a');
-      link.download = code + '_QR.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+    function finalizeImage(blob) {
+      var fileName = code + '_QR.png';
+      var file = new File([blob], fileName, { type: 'image/png' });
+
+      // لو المتصفح بيدعم المشاركة بالملفات (أغلب متصفحات الموبايل)
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          title: fileName
+        }).catch(function(err) {
+          // لو المستخدم لغى المشاركة، متعملش حاجة
+        });
+      } else {
+        // فولباك للكمبيوتر: تحميل عادي
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.download = fileName;
+        link.href = url;
+        link.click();
+        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+      }
     }
 
     var tempImg = new Image();
@@ -685,7 +701,13 @@
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
       ctx.drawImage(tempImg, qrX, qrY, qrSize, qrSize);
-      finalizeDownload();
+      canvas.toBlob(function(blob) {
+        if (blob) {
+          finalizeImage(blob);
+        } else {
+          alert('حدث خطأ أثناء تجهيز الصورة، حاولي تاني.');
+        }
+      }, 'image/png');
     };
     tempImg.onerror = function() {
       alert('حدث خطأ أثناء تجهيز الصورة، حاولي تاني.');
